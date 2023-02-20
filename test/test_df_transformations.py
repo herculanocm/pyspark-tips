@@ -33,7 +33,7 @@ def spark():
     spark.stop()
 
 
-def test_cast_columns_types_by_schema(spark):
+def test_cast_columns_types_by_schema(spark: SparkSession):
     print('')
     print('Original DF')
     df=spark.createDataFrame(data_df1, columns_df1)
@@ -61,3 +61,26 @@ def test_cast_columns_types_by_schema(spark):
     list_df_dtypes = (newDF.dtypes)
 
     assert list_expected_dtypes == list_df_dtypes
+
+
+def test_choose_last_row_modify_by_ids(spark: SparkSession):
+    df=spark.createDataFrame(data_df1, columns_df1)
+
+    list_schema = [
+        {'column_name': 'id', 'data_type': 'INTEGER'},
+        {'column_name': 'data', 'data_type': 'DATE'},
+        {'column_name': 'ativo', 'data_type': 'BOOLEAN'},
+        {'column_name': 'unidade', 'data_type': 'VARCHAR(200)'},
+        {'column_name': 'sigla', 'data_type': 'VARCHAR(2)'},
+        {'column_name': 'valor', 'data_type': 'NUMERIC(10,2)'},
+        {'column_name': 'obs', 'data_type': 'VARCHAR(MAX)'},
+        {'column_name': 'action', 'data_type': 'VARCHAR(1)'},
+        {'column_name': 'data_transaction', 'data_type': 'TIMESTAMP'},
+    ]
+
+    castedDF = df_transformations.cast_columns_types_by_schema(df, list_schema, True)
+
+    filterDF = df_transformations.choose_last_row_modify_by_ids(castedDF, ['id'], ['data_transaction'])
+    filterDF.show(truncate=False)
+
+    assert filterDF.filter("id == 1").count() == 1
