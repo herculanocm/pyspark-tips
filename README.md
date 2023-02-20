@@ -1,5 +1,5 @@
 # Pyspark tips for use
-
+de_pyspark_tips = Data Engineer Pyspark Tips
 ## Using:
 
 First generate wheel file for install with
