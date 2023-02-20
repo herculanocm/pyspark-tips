@@ -8,14 +8,15 @@ import pytest
 
 
 data_df1 = [
-    (1,"2020-08-28", "true", "G1 | ESCADA 1O P/ 2O | STAND | FRALDÁRIO","d", "3.15868", ""),
-    (2,"2018-05-25", "true","G1 | ESCADA 1O P/     2O | STAND | FRALDÁRIO     ","A", "5.5", "NÃO EXISTE"),
+    (1,"2020-08-28", "true", "G1 | ESCADA 1O P/ 2O | STAND | FRALDÁRIO","d", "3.15868", "","I","2020-08-27 23:59:59"),
+    (1,"2020-08-28", "true", "G1 | ESCADA 1O P/ 2O | STAND | FRALDÁRIO","d", "3.15868", "","U" ,"2020-08-28 12:59:59"),
+    (2,"2018-05-25", "true","G1 | ESCADA 1O P/     2O | STAND | FRALDÁRIO     ","A", "5.5", "NÃO EXISTE", "I","2020-08-27 23:59:59"),
     (3,"2018-05-25", "true","""G1 | ESCADA 1O P/     2O | STAND | FRALDÁRIO     
     NOVO |
     STUFF
-    ""","d", "389.390","")
+    ""","d", "389.390","", "I","2020-08-27 23:59:59")
     ]
-columns_df1 =["id","data", "ativo", "unidade", "sigla", "valor", "obs"]
+columns_df1 =["id","data", "ativo", "unidade", "sigla", "valor", "obs", "action", "data_transaction"]
 
 
 @pytest.fixture(scope="session")
@@ -45,7 +46,9 @@ def test_cast_columns_types_by_schema(spark):
         {'column_name': 'unidade', 'data_type': 'VARCHAR(200)'},
         {'column_name': 'sigla', 'data_type': 'VARCHAR(2)'},
         {'column_name': 'valor', 'data_type': 'NUMERIC(10,2)'},
-        {'column_name': 'obs', 'data_type': 'VARCHAR(MAX)'}
+        {'column_name': 'obs', 'data_type': 'VARCHAR(MAX)'},
+        {'column_name': 'action', 'data_type': 'VARCHAR(1)'},
+        {'column_name': 'data_transaction', 'data_type': 'TIMESTAMP'},
     ]
 
     newDF = df_transformations.cast_columns_types_by_schema(df, list_schema, True)
@@ -54,7 +57,7 @@ def test_cast_columns_types_by_schema(spark):
     print('New DF')
     newDF.printSchema()
     newDF.show(truncate=False)
-    list_expected_dtypes = [('id', 'int'), ('data', 'date'), ('ativo', 'boolean'), ('unidade', 'string'), ('sigla', 'string'), ('valor', 'double'), ('obs', 'string')]
+    list_expected_dtypes = [('id', 'int'), ('data', 'date'), ('ativo', 'boolean'), ('unidade', 'string'), ('sigla', 'string'), ('valor', 'double'), ('obs', 'string'), ('action', 'string'), ('data_transaction', 'timestamp')]
     list_df_dtypes = (newDF.dtypes)
 
     assert list_expected_dtypes == list_df_dtypes
