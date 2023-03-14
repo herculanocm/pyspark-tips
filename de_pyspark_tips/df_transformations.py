@@ -2,6 +2,7 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StringType, DoubleType, DateType, TimestampType, IntegerType, BooleanType
 from pyspark.sql import Window
+from typing import List, Dict
 
 def cast_columns_types_by_schema(df: DataFrame, list_schema: list, empty_columns_to_none: bool = False) -> DataFrame:
     if (df is None or list_schema is None) or (len(list_schema) == 0):
@@ -51,3 +52,14 @@ def choose_last_row_modify_by_ids(df: DataFrame, list_columns_primary_key: list,
         df_filter = df.withColumn('rn', F.row_number().over(partition_order)).filter('rn = 1').drop('rn')
         return df_filter
 
+def rename_columns_by_list(df: DataFrame, list_columns: List) -> DataFrame:
+    for rw in list_columns:
+        if rw['column_name'] in df.columns:
+            df = df.withColumnRenamed(rw['column_name'], rw['new_name'])
+    return df
+
+def format_df(df: DataFrame, schema: Dict) -> DataFrame:
+    columns_df = [s['column_name'] for s in schema['columns']]
+    df = df.select(*columns_df)
+    df = cast_columns_types_by_schema(df, schema['columns'], True)
+    return df

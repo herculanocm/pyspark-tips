@@ -84,3 +84,5 @@ def test_choose_last_row_modify_by_ids(spark: SparkSession):
     filterDF.show(truncate=False)
 
     assert filterDF.filter("id == 1").count() == 1
+
+    
