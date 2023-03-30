@@ -116,6 +116,47 @@ def cast_columns_types_by_schema(df: DataFrame, list_schema: list, empty_columns
                         F.col(fieldname) == "", None).otherwise(F.col(fieldname)))
 
         return df
+    
+def get_df_with_jsons_v1(df: DataFrame, json_columns: list, logger=None) -> DataFrame:
+    
+    for jcol in json_columns:
+        for jdcol in jcol['column_destinations']:
+             
+            if 'int' in jdcol['data_type'] and 'big' not in jdcol['data_type']:
+                df = df.withColumn(jdcol['alias_name'], F.get_json_object(F.col(jcol['column_origem']), jdcol['path_key'])) \
+                        .withColumn(jdcol['alias_name'], F.col(jdcol['alias_name']).cast(IntegerType()))
+                
+            elif 'bool' in jdcol['data_type']:
+                df = df.withColumn(jdcol['alias_name'], F.get_json_object(F.col(jcol['column_origem']), jdcol['path_key'])) \
+                        .withColumn(jdcol['alias_name'], F.col(jdcol['alias_name']).cast(BooleanType()))
+                    
+                
+            elif 'numeric' in jdcol['data_type'] or 'decimal' in jdcol['data_type'] or \
+                'double' in jdcol['data_type'] or 'float' in jdcol['data_type'] or \
+                'real' in jdcol['data_type'] or 'money' in jdcol['data_type'] or \
+                'currency' in jdcol['data_type']:
+                    
+                df = df.withColumn(jdcol['alias_name'], F.get_json_object(F.col(jcol['column_origem']), jdcol['path_key'])) \
+                        .withColumn(jdcol['alias_name'], F.col(jdcol['alias_name']).cast(DoubleType()))
+                    
+  
+            elif 'date' == jdcol['data_type']:
+                
+                df = df.withColumn(jdcol['alias_name'], F.get_json_object(F.col(jcol['column_origem']), jdcol['path_key'])) \
+                        .withColumn(jdcol['alias_name'], F.col(jdcol['alias_name']).cast(DateType()))
+                
+            elif 'date' in jdcol['data_type'] or 'timestamp' in jdcol['data_type']:
+                
+                df = df.withColumn(jdcol['alias_name'], F.get_json_object(F.col(jcol['column_origem']), jdcol['path_key'])) \
+                        .withColumn(jdcol['alias_name'], F.col(jdcol['alias_name']).cast(TimestampType()))
+                        
+            else:
+                df = df.withColumn(jdcol['alias_name'], F.get_json_object(F.col(jcol['column_origem']), jdcol['path_key'])) \
+                        .withColumn(jdcol['alias_name'], F.col(jdcol['alias_name']).cast(StringType())) \
+                        .withColumn(jdcol['alias_name'], F.regexp_replace(F.col(jdcol['alias_name']), "[\\r\\n]", '')) \
+                        .withColumn(jdcol['alias_name'], F.trim(F.col(jdcol['alias_name'])))
+                        
+    return df
 
 
 def choose_last_row_modify_by_ids(df: DataFrame, list_columns_primary_key: list, list_columns_order: list, logger=None) -> DataFrame:
