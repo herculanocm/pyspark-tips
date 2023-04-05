@@ -33,7 +33,7 @@ def spark():
     spark.stop()
 
 
-def ttest_cast_columns_types_by_schema(spark: SparkSession):
+def test_cast_columns_types_by_schema(spark: SparkSession):
     print('')
     print('Original DF')
     df=spark.createDataFrame(data_df1, columns_df1)
@@ -63,7 +63,7 @@ def ttest_cast_columns_types_by_schema(spark: SparkSession):
     assert list_expected_dtypes == list_df_dtypes
 
 
-def ttest_choose_last_row_modify_by_ids(spark: SparkSession):
+def test_choose_last_row_modify_by_ids(spark: SparkSession):
     df=spark.createDataFrame(data_df1, columns_df1)
 
     list_schema = [
