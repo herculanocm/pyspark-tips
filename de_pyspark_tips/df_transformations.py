@@ -74,7 +74,7 @@ def check_datetime_format_v1(date_string, format='%Y-%m-%d %H:%M:%S.%f'):
         return datetime_compare.strftime(format)
 
 
-def cast_columns_types_by_schema(df: DataFrame, list_schema: list, empty_columns_to_none: bool = False, logger=None) -> DataFrame:
+def cast_columns_types_by_schema(df: DataFrame, list_schema: list, empty_columns_to_none: bool = False, truncate_string: bool = True, truncate_string_length: int = 16382, logger=None) -> DataFrame:
     logger = get_logger(logger)
     if (df is None or list_schema is None) or (len(list_schema) == 0):
         raise ValueError('The values could by not null or empty')
@@ -107,9 +107,12 @@ def cast_columns_types_by_schema(df: DataFrame, list_schema: list, empty_columns
                 df = df.withColumn(fieldname, F.col(fieldname).cast(TimestampType()))
 
             else:
-                df = df.withColumn(fieldname, F.col(fieldname).cast(StringType())) \
-                    .withColumn(fieldname, F.regexp_replace(F.col(fieldname), "[\\r\\n]", '')) \
-                    .withColumn(fieldname, F.trim(F.col(fieldname)))
+                df = df.withColumn(fieldname, F.col(fieldname).cast(StringType())).withColumn(fieldname, F.trim(F.col(fieldname)))
+                
+                #.withColumn(fieldname, F.regexp_replace(F.col(fieldname), "[\\r\\n]", '')) \
+
+                if truncate_string == True:
+                    df = df.withColumn(fieldname, F.substring(fieldname, 1,truncate_string_length))
 
                 if empty_columns_to_none:
                     df = df.withColumn(fieldname, F.when(
