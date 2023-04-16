@@ -83,8 +83,8 @@ def cast_columns_types_by_schema(df: DataFrame, list_schema: list, empty_columns
             fieldname = column['column_name']
             fieldtype = column['data_type'].lower()
 
-            logger.info(
-                f"Casting column : {column['column_name']} to data_type: {column['data_type']}")
+            # logger.info(
+            #     f"Casting column : {column['column_name']} to data_type: {column['data_type']}")
 
             if 'int' in fieldtype and 'big' not in fieldtype:
                 df = df.withColumn(fieldname, F.col(
