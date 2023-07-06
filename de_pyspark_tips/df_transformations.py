@@ -21,6 +21,26 @@ def get_logger(logger: logging.Logger = None) -> logging.Logger:
 
     return logger
 
+ 
+@F.udf(returnType=DoubleType()) 
+def format_string_to_double_v1(value_decimal, return_none_if_except=True):
+    try:
+        str_value_decimal = str(value_decimal).strip().replace(' ','')
+        
+        
+    
+        if str_value_decimal.find('.') > 0 and str_value_decimal.find(',') > 0:
+            return float((str_value_decimal.replace('.','')).replace(',','.'))
+        elif str_value_decimal.find(',') > 0:
+            return float(str_value_decimal.replace(',','.'))
+        else:
+            return float(str_value_decimal)
+    except:
+        if return_none_if_except == True:
+            return None
+        else:
+            return float(0)
+
 
 @F.udf(returnType=StringType())
 def check_date_format_v1(date_string, format="%Y-%m-%d"):

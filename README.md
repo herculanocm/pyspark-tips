@@ -17,7 +17,7 @@ filterDF = ET.choose_last_row_modify_by_ids(castedDF, ['id'], ['data_transaction
 
 ## Enviroments
 
-* Python 3.9
+* Python 3.7
 * JAVA 1.8
 * SPARK 3.2
 * Pyspark >=3.1,<3.3
