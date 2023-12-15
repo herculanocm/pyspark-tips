@@ -22,6 +22,10 @@ filterDF = ET.choose_last_row_modify_by_ids(castedDF, ['id'], ['data_transaction
 * SPARK 3.2
 * Pyspark >=3.1,<3.3
 
+```
+pip install "pyspark >=3.2,<3.3"
+```
+
 ## Tests
 
 ```
