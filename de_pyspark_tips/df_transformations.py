@@ -181,7 +181,6 @@ def get_df_with_jsons_v1(df: DataFrame, json_columns: list, logger=None) -> Data
                         
     return df
 
-
 def choose_last_row_modify_by_ids(df: DataFrame, list_columns_primary_key: list, list_columns_order: list, logger=None) -> DataFrame:
     logger = get_logger(logger)
     if (df is None or list_columns_primary_key is None or list_columns_order is None) or (len(list_columns_primary_key) == 0 or len(list_columns_order) == 0):
